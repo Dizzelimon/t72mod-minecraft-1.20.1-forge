@@ -1,0 +1,36 @@
+name: Build T-72 Mod JAR
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unpack uploaded ZIP
+        run: unzip -o t72mod-forge-1.20.1.zip
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+
+      - name: Build Mod JAR
+        working-directory: t72mod-forge-1.20.1
+        run: gradle build --no-daemon
+
+      - name: Upload Compiled JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: t72mod-1.20.1-jar
+          path: t72mod-forge-1.20.1/build/libs/*.jar
